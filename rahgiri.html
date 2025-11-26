@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RāhgiriAI - Desi Career Mentor</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;700&family=Noto+Sans+Gurmukhi:wght@400;700&family=Noto+Nastaliq+Urdu:wght@400;700&family=Outfit:wght@400;800&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            background-color: #fce7f3; /* Pink Warm Background */
+            font-family: 'Noto Sans', sans-serif;
+            overflow-x: hidden;
+        }
+        
+        /* Fonts */
+        .lang-pa { font-family: 'Noto Sans Gurmukhi', sans-serif; }
+        .lang-ur { font-family: 'Noto Nastaliq Urdu', serif; direction: rtl; }
+        .lang-hi { font-family: 'Noto Sans', sans-serif; }
+        .lang-en { font-family: 'Outfit', sans-serif; }
+
+        /* Animation */
+        .fade-in { animation: fadeIn 0.5s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* UI Elements */
+        .card-btn {
+            transition: transform 0.1s, box-shadow 0.1s;
+            border-bottom: 4px solid rgba(0,0,0,0.1);
+            background: white;
+        }
+        .card-btn:active {
+            transform: translateY(2px);
+            border-bottom: 0px solid;
+        }
+        
+        .avatar-circle {
+            width: 100px;
+            height: 100px;
+            background: #E11D48; /* Rose Red */
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 4px solid white;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            margin: 0 auto;
+        }
+        
+        .pulse-mic { animation: pulse 2s infinite; }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(225, 29, 72, 0.4); }
+            70% { box-shadow: 0 0 0 15px rgba(225, 29, 72, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(225, 29, 72, 0); }
+        }
+
+        /* Scrollbar */
+        .result-scroll::-webkit-scrollbar { width: 6px; }
+        .result-scroll::-webkit-scrollbar-thumb { background-color: #E11D48; border-radius: 20px; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center relative">
+
+    <!-- Background Pattern -->
+    <div class="absolute inset-0 z-0 opacity-10" style="background-image: radial-gradient(#E11D48 1px, transparent 1px); background-size: 20px 20px;"></div>
+
+    <!-- MAIN CONTAINER -->
+    <main id="app-container" class="relative z-10 w-full max-w-md bg-white min-h-[100vh] sm:min-h-[800px] sm:rounded-3xl shadow-2xl flex flex-col overflow-hidden">
+        
+        <!-- Header -->
+        <header class="bg-[#E11D48] p-4 text-white flex justify-between items-center shadow-md relative">
+            <!-- Back Button (Hidden by default) -->
+            <button id="btn-back" onclick="goBack()" class="hidden z-20 bg-white/20 hover:bg-white/30 p-2 rounded-full w-10 h-10 flex items-center justify-center transition-colors">
+                <i class="fa-solid fa-arrow-left text-sm"></i>
+            </button>
+
+            <div class="flex items-center gap-2 absolute left-0 right-0 justify-center z-10 pointer-events-none">
+                <i class="fa-solid fa-route"></i>
+                <span class="font-bold text-xl tracking-wide">Rāhgiri<span class="font-light opacity-80">AI</span></span>
+            </div>
+            
+            <div id="header-lang" class="text-sm opacity-90 hidden font-bold bg-white/20 px-2 py-1 rounded z-20">EN</div>
+        </header>
+
+        <!-- CONTENT AREA -->
+        <div class="flex-grow flex flex-col p-6 overflow-y-auto result-scroll" id="content-area">
+            
+            <!-- SCREEN 1: LANGUAGE -->
+            <div id="screen-lang" class="flex flex-col items-center justify-center h-full space-y-6 fade-in">
+                <div class="text-center">
+                    <h1 class="text-2xl font-bold text-gray-800 mb-2">Namaste! 🙏</h1>
+                    <p class="text-gray-500">Choose your language / अपनी भाषा चुनें</p>
+                </div>
+                <div class="grid grid-cols-1 w-full gap-4">
+                    <button onclick="setLang('hi')" class="card-btn border-2 border-orange-100 p-4 rounded-xl flex items-center gap-4 hover:bg-orange-50">
+                        <div class="text-3xl">🇮🇳</div>
+                        <div class="text-left"><h3 class="font-bold text-gray-800 text-lg">हिन्दी</h3><p class="text-xs text-gray-500">Hindi</p></div>
+                    </button>
+                    <button onclick="setLang('pa')" class="card-btn border-2 border-blue-100 p-4 rounded-xl flex items-center gap-4 hover:bg-blue-50">
+                        <div class="text-3xl">🌾</div>
+                        <div class="text-left"><h3 class="font-bold text-gray-800 text-lg lang-pa">ਪੰਜਾਬੀ</h3><p class="text-xs text-gray-500">Punjabi</p></div>
+                    </button>
+                    <button onclick="setLang('ur')" class="card-btn border-2 border-green-100 p-4 rounded-xl flex items-center gap-4 hover:bg-green-50">
+                        <div class="text-3xl">🕌</div>
+                        <div class="text-left w-full text-right"><h3 class="font-bold text-gray-800 text-lg lang-ur">اردو</h3><p class="text-xs text-gray-500" style="direction: ltr;">Urdu</p></div>
+                    </button>
+                    <button onclick="setLang('en')" class="card-btn border-2 border-gray-100 p-4 rounded-xl flex items-center gap-4 hover:bg-gray-50">
+                        <div class="text-3xl">🅰️</div>
+                        <div class="text-left"><h3 class="font-bold text-gray-800 text-lg">English</h3><p class="text-xs text-gray-500">English</p></div>
+                    </button>
+                </div>
+            </div>
+
+            <!-- SCREEN 2: INTRO -->
+            <div id="screen-intro" class="hidden flex-col items-center text-center h-full justify-center space-y-6 fade-in">
+                <div class="avatar-circle mb-4"><i class="fa-solid fa-user-graduate text-white text-4xl"></i></div>
+                <h2 id="txt-intro-title" class="text-2xl font-bold text-gray-800"></h2>
+                <p id="txt-intro-desc" class="text-gray-600 text-lg leading-relaxed"></p>
+                <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 text-left w-full rounded-r-lg">
+                    <p id="txt-intro-warning" class="text-sm text-yellow-800 italic"></p>
+                </div>
+                <div class="w-full pt-8">
+                    <button onclick="nextScreen('screen-q1')" class="w-full bg-[#E11D48] text-white py-4 rounded-full font-bold text-xl shadow-lg hover:bg-[#be123c] flex items-center justify-center gap-3">
+                        <span id="txt-btn-start">Start</span> <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- SCREEN 3: SUBJECTS -->
+            <div id="screen-q1" class="hidden flex-col h-full fade-in">
+                <div class="w-full bg-gray-200 h-2 rounded-full mb-6"><div class="bg-[#E11D48] h-2 rounded-full" style="width: 25%"></div></div>
+                <h2 id="txt-q1-title" class="text-xl font-bold text-gray-800 mb-6"></h2>
+                <div class="grid grid-cols-2 gap-4">
+                    <button onclick="selectSubject('math')" class="card-btn border-2 border-gray-100 p-4 rounded-xl flex flex-col items-center gap-2 hover:border-[#E11D48]">
+                        <img src="https://img.icons8.com/color/96/calculator--v1.png" class="w-12 h-12"> <span id="txt-sub-math" class="font-bold text-gray-700">Maths</span>
+                    </button>
+                    <button onclick="selectSubject('science')" class="card-btn border-2 border-gray-100 p-4 rounded-xl flex flex-col items-center gap-2 hover:border-[#E11D48]">
+                        <img src="https://img.icons8.com/color/96/test-tube.png" class="w-12 h-12"> <span id="txt-sub-sci" class="font-bold text-gray-700">Science</span>
+                    </button>
+                    <button onclick="selectSubject('arts')" class="card-btn border-2 border-gray-100 p-4 rounded-xl flex flex-col items-center gap-2 hover:border-[#E11D48]">
+                        <img src="https://img.icons8.com/color/96/scroll.png" class="w-12 h-12"> <span id="txt-sub-hist" class="font-bold text-gray-700">History</span>
+                    </button>
+                    <button onclick="selectSubject('lang')" class="card-btn border-2 border-gray-100 p-4 rounded-xl flex flex-col items-center gap-2 hover:border-[#E11D48]">
+                        <img src="https://img.icons8.com/color/96/books.png" class="w-12 h-12"> <span id="txt-sub-lit" class="font-bold text-gray-700">Language</span>
+                    </button>
+                    <button onclick="selectSubject('comp')" class="card-btn border-2 border-gray-100 p-4 rounded-xl flex flex-col items-center gap-2 hover:border-[#E11D48]">
+                        <img src="https://img.icons8.com/color/96/laptop-coding.png" class="w-12 h-12"> <span id="txt-sub-comp" class="font-bold text-gray-700">Computer</span>
+                    </button>
+                    <button onclick="selectSubject('agri')" class="card-btn border-2 border-gray-100 p-4 rounded-xl flex flex-col items-center gap-2 hover:border-[#E11D48]">
+                        <img src="https://img.icons8.com/color/96/potted-plant.png" class="w-12 h-12"> <span id="txt-sub-agri" class="font-bold text-gray-700">Nature</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- SCREEN 4: DYNAMIC INTERESTS -->
+            <div id="screen-q2" class="hidden flex-col h-full fade-in">
+                <div class="w-full bg-gray-200 h-2 rounded-full mb-6"><div class="bg-[#E11D48] h-2 rounded-full" style="width: 50%"></div></div>
+                <h2 id="txt-q2-title" class="text-xl font-bold text-gray-800 mb-6"></h2>
+                
+                <!-- This grid populates via JS -->
+                <div id="dynamic-hobby-grid" class="grid grid-cols-2 gap-3">
+                    <!-- Dynamic Buttons Here -->
+                </div>
+            </div>
+
+            <!-- SCREEN 5: LOCATION -->
+            <div id="screen-loc" class="hidden flex-col h-full fade-in">
+                <div class="w-full bg-gray-200 h-2 rounded-full mb-6"><div class="bg-[#E11D48] h-2 rounded-full" style="width: 75%"></div></div>
+                <h2 id="txt-loc-title" class="text-xl font-bold text-gray-800 mb-2"></h2>
+                <p id="txt-loc-desc" class="text-gray-500 mb-8"></p>
+
+                <button onclick="detectLocation()" class="w-full bg-blue-600 text-white py-4 rounded-xl font-bold shadow-md hover:bg-blue-700 flex items-center justify-center gap-3 mb-6">
+                    <i class="fa-solid fa-location-crosshairs"></i> <span id="txt-btn-loc">Detect My Location</span>
+                </button>
+                
+                <div class="text-center text-gray-400 text-sm mb-4">- OR -</div>
+
+                <select id="manual-state" class="w-full p-4 border-2 border-gray-200 rounded-xl bg-gray-50 font-semibold text-gray-700 focus:border-[#E11D48] outline-none" onchange="manualLocation(this.value)">
+                    <option value="" disabled selected>Select State</option>
+                    <option value="Himachal Pradesh">Himachal Pradesh</option>
+                    <option value="Punjab">Punjab</option>
+                    <option value="Uttar Pradesh">Uttar Pradesh</option>
+                    <option value="Bihar">Bihar</option>
+                    <option value="Rajasthan">Rajasthan</option>
+                    <option value="Delhi">Delhi</option>
+                </select>
+            </div>
+
+            <!-- SCREEN 6: LOADING -->
+            <div id="screen-loading" class="hidden flex-col items-center justify-center h-full text-center space-y-6 fade-in">
+                <div class="avatar-circle pulse-mic mb-4"><i class="fa-solid fa-brain text-white text-4xl"></i></div>
+                <h2 id="txt-load" class="text-xl font-bold text-gray-800">Thinking...</h2>
+                <p id="loc-status" class="text-sm text-gray-500"></p>
+            </div>
+
+            <!-- SCREEN 7: RESULT -->
+            <div id="screen-result" class="hidden flex-col h-full fade-in pb-20 w-full">
+                <div class="bg-green-50 border border-green-200 p-5 rounded-2xl mb-6 shadow-sm">
+                    <p id="txt-res-pre" class="text-gray-500 text-xs uppercase tracking-wider mb-2 font-bold"></p>
+                    <h1 id="res-stream" class="text-2xl font-bold text-[#E11D48] mb-2 leading-tight"></h1>
+                    <p id="res-why" class="text-gray-700 text-sm italic border-l-4 border-[#E11D48] pl-3"></p>
+                </div>
+
+                <!-- 5 Year Path -->
+                <div class="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm mb-6">
+                    <h3 class="font-bold text-gray-800 mb-4 flex items-center"><i class="fa-solid fa-road text-blue-500 mr-2"></i> Roadmap</h3>
+                    <div class="relative pl-6 border-l-2 border-gray-200 space-y-6">
+                        <div class="relative">
+                            <div class="absolute -left-[33px] bg-blue-100 p-1 rounded-full border-2 border-white"><i class="fa-solid fa-book text-blue-600 text-xs"></i></div>
+                            <h4 class="font-bold text-gray-800 text-sm">Class 11-12</h4>
+                            <p id="res-sub" class="text-xs text-gray-600 font-semibold"></p>
+                        </div>
+                        <div class="relative">
+                            <div class="absolute -left-[33px] bg-purple-100 p-1 rounded-full border-2 border-white"><i class="fa-solid fa-pen text-purple-600 text-xs"></i></div>
+                            <h4 class="font-bold text-gray-800 text-sm">Exam</h4>
+                            <p id="res-exam" class="text-xs text-gray-600 font-semibold"></p>
+                        </div>
+                        <div class="relative">
+                            <div class="absolute -left-[33px] bg-green-100 p-1 rounded-full border-2 border-white"><i class="fa-solid fa-briefcase text-green-600 text-xs"></i></div>
+                            <h4 class="font-bold text-gray-800 text-sm">Job</h4>
+                            <p id="res-job" class="text-xs text-gray-600 font-semibold"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Local Colleges -->
+                <div class="bg-blue-50 p-5 rounded-2xl border border-blue-100 mb-4 shadow-sm">
+                     <h4 class="text-sm font-bold text-blue-900 mb-3 flex items-center">
+                        <i class="fa-solid fa-location-dot text-blue-600 mr-2"></i> Colleges near <span id="user-location-display" class="ml-1 underline decoration-dotted">You</span>
+                     </h4>
+                     <ul id="res-college-list" class="space-y-2 text-sm text-gray-700 list-disc pl-4">
+                        <!-- Dynamic List -->
+                     </ul>
+                </div>
+
+                <!-- Scholarships -->
+                <div class="bg-yellow-50 p-5 rounded-2xl border border-yellow-100 shadow-sm">
+                    <h4 class="text-sm font-bold text-yellow-900 mb-3 flex items-center"><i class="fa-solid fa-award text-yellow-600 mr-2"></i> Financial Aid</h4>
+                    <div class="flex gap-2">
+                        <a href="https://scholarships.gov.in" target="_blank" class="flex-1 bg-white border border-yellow-300 py-2 rounded-lg text-xs font-bold text-center text-yellow-700 hover:bg-yellow-100">NSP Portal <i class="fa-solid fa-external-link-alt ml-1"></i></a>
+                    </div>
+                </div>
+
+                <button onclick="location.reload()" class="mt-8 w-full border-2 border-gray-300 text-gray-600 py-3 rounded-xl font-bold hover:bg-gray-50 mb-10">
+                    Start Again
+                </button>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- LOGIC -->
+    <script>
+        // --- HISTORY MANAGEMENT ---
+        let screenHistory = [];
+        const btnBack = document.getElementById('btn-back');
+
+        function updateBackButton() {
+            if (screenHistory.length > 0) {
+                btnBack.classList.remove('hidden');
+            } else {
+                btnBack.classList.add('hidden');
+            }
+        }
+
+        function goBack() {
+            if (screenHistory.length === 0) return;
+            
+            const prevScreenId = screenHistory.pop();
+            
+            // Hide current screen
+            const current = document.querySelector('[id^="screen-"]:not(.hidden)');
+            if (current) {
+                current.classList.add('hidden');
+                current.classList.remove('flex');
+            }
+            
+            // Show previous screen
+            const prev = document.getElementById(prevScreenId);
+            prev.classList.remove('hidden');
+            prev.classList.add('flex');
+            
+            updateBackButton();
+        }
+
+        // --- DATA ---
+        const content = {
+            en: {
+                introTitle: "Hello! I am Rāhgiri.",
+                introDesc: "I am your AI Didi. I will help you choose the right stream.",
+                introWarn: "Don't choose a stream just because your friend chose it.",
+                btnStart: "Let's Check", btnVoice: "Voice Mode",
+                q1Title: "Which subject is easy?",
+                q2Title: "What do you like in this?",
+                locTitle: "Where do you live?",
+                locDesc: "Finding nearby colleges for you.",
+                btnLoc: "Detect My Location",
+                load: "Analyzing your answers...",
+                resPre: "Recommended Career",
+                hobbies: {
+                    tech: "Gadgets / Tech", fix: "Fixing Machines", build: "Building / Design", money: "Money / Biz",
+                    help: "Helping People", exp: "Experiments", anim: "Animals", farm: "Farming",
+                    draw: "Drawing", lead: "Leadership", write: "Writing", code: "Coding", act: "Acting"
+                },
+                subjects: { math: "Maths", science: "Science", arts: "History", lang: "Hindi/Eng", comp: "Computer", agri: "Nature" }
+            },
+            hi: {
+                introTitle: "नमस्ते! मैं राहगिरी हूँ।",
+                introDesc: "मैं आपकी AI दीदी हूँ।",
+                introWarn: "दोस्तों की देखा-देखी स्ट्रीम न चुनें।",
+                btnStart: "शुरू करें", btnVoice: "बोल कर बताएं",
+                q1Title: "कौन सा विषय आसान है?",
+                q2Title: "इनमें से क्या पसंद है?",
+                locTitle: "आप कहाँ रहते हैं?",
+                locDesc: "नजदीकी कॉलेज खोजने के लिए।",
+                btnLoc: "लोकेशन ढूँढें",
+                load: "सोच रही हूँ...",
+                resPre: "सुझाया गया करियर",
+                hobbies: {
+                    tech: "टेक्नोलॉजी", fix: "मशीनें ठीक करना", build: "बनाना / डिज़ाइन", money: "पैसा / व्यापार",
+                    help: "मदद करना", exp: "प्रयोग (Lab)", anim: "जानवर", farm: "खेती",
+                    draw: "चित्रकारी", lead: "नेतागिरी", write: "लिखना", code: "कोडिंग", act: "नाटक"
+                },
+                subjects: { math: "गणित", science: "विज्ञान", arts: "इतिहास", lang: "भाषा", comp: "कंप्यूटर", agri: "प्रकृति" }
+            },
+            pa: {
+                introTitle: "ਸਤਿ ਸ੍ਰੀ ਅਕਾਲ! ਮੈਂ ਰਾਹਗਿਰੀ ਹਾਂ।",
+                introDesc: "ਮੈਂ ਤੁਹਾਡੀ AI ਦੀਦੀ ਹਾਂ।",
+                introWarn: "ਦੋਸਤਾਂ ਦੀ ਦੇਖਾ-ਦੇਖੀ ਵਿਸ਼ਾ ਨਾ ਚੁਣੋ।",
+                btnStart: "ਸ਼ੁਰੂ ਕਰੋ", btnVoice: "ਬੋਲ ਕੇ ਦੱਸੋ",
+                q1Title: "ਕਿਹੜਾ ਵਿਸ਼ਾ ਸੌਖਾ ਹੈ?",
+                q2Title: "ਇਨ੍ਹਾਂ ਵਿੱਚੋਂ ਕੀ ਪਸੰਦ ਹੈ?",
+                locTitle: "ਤੁਸੀਂ ਕਿੱਥੇ ਰਹਿੰਦੇ ਹੋ?",
+                locDesc: "ਨੇੜਲੇ ਕਾਲਜ ਲੱਭਣ ਲਈ।",
+                btnLoc: "ਲੋਕੇਸ਼ਨ ਲੱਭੋ",
+                load: "ਸੋਚ ਰਹੀ ਹਾਂ...",
+                resPre: "ਸਿਫਾਰਸ਼ ਕੀਤਾ ਕੈਰੀਅਰ",
+                hobbies: {
+                    tech: "ਤਕਨਾਲੋਜੀ", fix: "ਮਸ਼ੀਨਾਂ ਠੀਕ ਕਰਨਾ", build: "ਇਮਾਰਤ", money: "ਪੈਸਾ",
+                    help: "ਮਦਦ", exp: "ਤਜਰਬੇ", anim: "ਜਾਨਵਰ", farm: "ਖੇਤੀ",
+                    draw: "ਡਰਾਇੰਗ", lead: "ਲੀਡਰਸ਼ਿਪ", write: "ਲਿਖਣਾ", code: "ਕੋਡਿੰਗ", act: "ਐਕਟਿੰਗ"
+                },
+                subjects: { math: "ਗਣਿਤ", science: "ਸਾਇੰਸ", arts: "ਇਤਿਹਾਸ", lang: "ਭਾਸ਼ਾ", comp: "ਕੰਪਿਊਟਰ", agri: "ਖੇਤੀ" }
+            }
+        };
+
+        const hobbyMap = {
+            'math': [ {id:'tech',icon:'fa-microchip'}, {id:'money',icon:'fa-coins'}, {id:'build',icon:'fa-city'}, {id:'fix',icon:'fa-wrench'} ],
+            'science': [ {id:'help',icon:'fa-user-nurse'}, {id:'exp',icon:'fa-flask'}, {id:'anim',icon:'fa-paw'}, {id:'tech',icon:'fa-microchip'} ],
+            'arts': [ {id:'draw',icon:'fa-palette'}, {id:'lead',icon:'fa-users'}, {id:'write',icon:'fa-pen-nib'}, {id:'act',icon:'fa-masks-theater'} ],
+            'lang': [ {id:'write',icon:'fa-pen-nib'}, {id:'lead',icon:'fa-users'}, {id:'act',icon:'fa-masks-theater'}, {id:'help',icon:'fa-hand-holding-heart'} ],
+            'comp': [ {id:'code',icon:'fa-laptop-code'}, {id:'build',icon:'fa-pen-fancy'}, {id:'tech',icon:'fa-server'}, {id:'fix',icon:'fa-screwdriver-wrench'} ],
+            'agri': [ {id:'farm',icon:'fa-wheat-awn'}, {id:'anim',icon:'fa-cow'}, {id:'fix',icon:'fa-tractor'}, {id:'exp',icon:'fa-leaf'} ]
+        };
+
+        const collegeDB = {
+            "Himachal Pradesh": ["Govt Polytechnic, Kangra", "H.P. University, Shimla", "NIT Hamirpur", "CSK HPKV Palampur", "IGMC Shimla"],
+            "Punjab": ["PAU Ludhiana", "GNDU Amritsar", "Thapar University", "Punjabi Univ Patiala", "Govt Polytechnic Amritsar"],
+            "Default": ["Local Govt Polytechnic", "State University", "Nearest ITI", "Central University"]
+        };
+
+        let currentLang = 'en';
+        let userSelection = { subject: '', hobby: '', state: 'Default' };
+
+        // --- CORE FUNCTIONS ---
+        function setLang(lang) {
+            currentLang = lang;
+            document.body.className = `min-h-screen flex flex-col items-center justify-center relative lang-${lang}`;
+            const t = content[lang] || content['en'];
+            
+            // Set Text
+            document.getElementById('txt-intro-title').innerText = t.introTitle;
+            document.getElementById('txt-intro-desc').innerText = t.introDesc;
+            document.getElementById('txt-intro-warning').innerText = t.introWarn;
+            document.getElementById('txt-btn-start').innerText = t.btnStart;
+            document.getElementById('txt-q1-title').innerText = t.q1Title;
+            document.getElementById('txt-q2-title').innerText = t.q2Title;
+            document.getElementById('txt-loc-title').innerText = t.locTitle;
+            document.getElementById('txt-loc-desc').innerText = t.locDesc;
+            document.getElementById('txt-btn-loc').innerText = t.btnLoc;
+            document.getElementById('txt-load').innerText = t.load;
+            document.getElementById('txt-res-pre').innerText = t.resPre;
+            document.getElementById('txt-sub-math').innerText = t.subjects.math;
+            document.getElementById('txt-sub-sci').innerText = t.subjects.science;
+            document.getElementById('txt-sub-hist').innerText = t.subjects.arts;
+            document.getElementById('txt-sub-lit').innerText = t.subjects.lang;
+            document.getElementById('txt-sub-comp').innerText = t.subjects.comp;
+            document.getElementById('txt-sub-agri').innerText = t.subjects.agri;
+
+            document.getElementById('header-lang').classList.remove('hidden');
+            document.getElementById('header-lang').innerText = lang.toUpperCase();
+            nextScreen('screen-intro');
+        }
+
+        function nextScreen(id, pushToHistory = true) {
+            // Push current visible screen to history
+            const current = document.querySelector('[id^="screen-"]:not(.hidden)');
+            if (current && pushToHistory) {
+                screenHistory.push(current.id);
+            }
+            updateBackButton();
+
+            const screens = ['screen-lang', 'screen-intro', 'screen-q1', 'screen-q2', 'screen-loc', 'screen-loading', 'screen-result'];
+            screens.forEach(s => {
+                document.getElementById(s).classList.add('hidden');
+                document.getElementById(s).classList.remove('flex');
+            });
+            const target = document.getElementById(id);
+            target.classList.remove('hidden');
+            target.classList.add('flex');
+        }
+
+        function selectSubject(sub) {
+            userSelection.subject = sub;
+            renderHobbies(sub);
+            nextScreen('screen-q2');
+        }
+
+        function renderHobbies(sub) {
+            const grid = document.getElementById('dynamic-hobby-grid');
+            grid.innerHTML = ''; 
+            const relevant = hobbyMap[sub] || hobbyMap['math'];
+            const t = content[currentLang] || content['en'];
+
+            relevant.forEach(h => {
+                const btn = document.createElement('button');
+                btn.className = 'card-btn border-2 border-gray-100 p-3 rounded-xl flex flex-col items-center gap-2 hover:border-[#E11D48] text-center h-32 justify-center';
+                btn.onclick = () => { userSelection.hobby = h.id; nextScreen('screen-loc'); };
+                const label = t.hobbies[h.id] || h.id;
+                btn.innerHTML = `<div class="bg-gray-100 p-2 rounded-full text-gray-600"><i class="fa-solid ${h.icon}"></i></div><span class="text-sm font-semibold text-gray-700 leading-tight">${label}</span>`;
+                grid.appendChild(btn);
+            });
+        }
+
+        function detectLocation() {
+            if (navigator.geolocation) {
+                document.getElementById('txt-btn-loc').innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Detecting...';
+                navigator.geolocation.getCurrentPosition(successLoc, errorLoc);
+            } else alert("Geolocation not supported.");
+        }
+
+        async function successLoc(position) {
+            try {
+                const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${position.coords.latitude}&lon=${position.coords.longitude}`);
+                const data = await res.json();
+                userSelection.state = data.address.state || "Default";
+                processResult();
+            } catch (e) {
+                manualLocation("Default");
+            }
+        }
+        function errorLoc() { manualLocation("Default"); }
+        function manualLocation(val) { userSelection.state = val; processResult(); }
+
+        function processResult() {
+            // Push location screen to history so we can come back to it
+            nextScreen('screen-loading', true);
+            document.getElementById('loc-status').innerText = `Checking ${userSelection.state}...`;
+            
+            setTimeout(() => {
+                const s = userSelection.subject;
+                const h = userSelection.hobby;
+                let res = { stream: "General Stream", why: "Versatile Choice", sub: "History, English", exam: "Govt Exams", job: "Official" };
+
+                // LOGIC MATRIX
+                // MATHS
+                if(s==='math' && h==='tech') res = { stream: "Science (PCM) + CS", why: "Logic + Machines = Engineering", sub: "Physics, Maths, CS", exam: "JEE / BITSAT", job: "Software Eng / Robotics" };
+                else if(s==='math' && h==='money') res = { stream: "Commerce + Maths", why: "Numbers + Money = Finance", sub: "Accounts, Econ, Maths", exam: "CA / IPMAT", job: "CA / Banker" };
+                else if(s==='math' && h==='build') res = { stream: "Science (PCM)", why: "Maths + Structure = Architecture", sub: "Maths, Physics, Drawing", exam: "NATA / JEE P2", job: "Architect / Civil Eng" };
+                else if(s==='math' && h==='fix') res = { stream: "Diploma (Mech/Elec)", why: "Hands-on skills > Theory", sub: "Polytechnic Stream", exam: "Polytechnic Ent.", job: "Junior Engineer / Pilot" };
+
+                // SCIENCE
+                else if(s==='science' && h==='help') res = { stream: "Science (PCB)", why: "Empathy + Biology = Doctor", sub: "Bio, Chem, Physics", exam: "NEET / Nursing", job: "Doctor / Nurse" };
+                else if(s==='science' && h==='exp') res = { stream: "Pure Science", why: "Curiosity = Research", sub: "PCM / PCB", exam: "IISER / NEST", job: "Scientist / Professor" };
+                else if(s==='science' && h==='anim') res = { stream: "Veterinary Science", why: "Love for Animals", sub: "PCB", exam: "NEET (Vet)", job: "Veterinary Doctor" };
+                
+                // ARTS
+                else if(s==='arts' && h==='draw') res = { stream: "Fine Arts / Design", why: "Creativity is your asset", sub: "Fine Arts, History", exam: "NID / UCEED", job: "Graphic Designer" };
+                else if(s==='arts' && h==='lead') res = { stream: "Humanities (Pol Sci)", why: "Leadership = Civil Services", sub: "Pol Sci, History", exam: "CLAT / UPSC", job: "Lawyer / IAS Officer" };
+                else if(s==='arts' && h==='write') res = { stream: "Humanities (Lit)", why: "Words are your power", sub: "Literature, Sociology", exam: "Mass Comm Ent.", job: "Journalist / Writer" };
+
+                // AGRI
+                else if(s==='agri') res = { stream: "Agriculture Science", why: "Understanding Nature", sub: "Agri, Bio, Chem", exam: "ICAR AIEEA", job: "Agri Officer / Farmer" };
+
+                // COMP
+                else if(s==='comp') res = { stream: "Science (PCM) + CS", why: "Future is Code", sub: "CS, Maths, Physics", exam: "JEE / BCA", job: "SDE / Hacker / Dev" };
+
+                // FALLBACKS
+                else { res = { stream: "Vocational / Arts", why: "Build Skills First", sub: "English, Vocational", exam: "Skill Certs", job: "Skilled Professional" }; }
+
+                // UI UPDATE
+                document.getElementById('res-stream').innerText = res.stream;
+                document.getElementById('res-why').innerText = res.why;
+                document.getElementById('res-sub').innerText = res.sub;
+                document.getElementById('res-exam').innerText = res.exam;
+                document.getElementById('res-job').innerText = res.job;
+                document.getElementById('user-location-display').innerText = userSelection.state;
+
+                const colleges = collegeDB[userSelection.state] || collegeDB["Default"];
+                const list = document.getElementById('res-college-list');
+                list.innerHTML = '';
+                colleges.forEach(c => {
+                    const li = document.createElement('li');
+                    li.innerText = c;
+                    list.appendChild(li);
+                });
+
+                // Move to result without pushing 'loading' to history
+                nextScreen('screen-result', false);
+            }, 2000);
+        }
+    </script>
+</body>
+</html>
